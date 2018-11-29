@@ -9,15 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import phamf.com.chemicalapp.CustomView.VirtualKeyBoardSensor;
-import phamf.com.chemicalapp.Model.Chemical_Element;
 import phamf.com.chemicalapp.R;
 import phamf.com.chemicalapp.RO_Model.RO_Chemical_Element;
 

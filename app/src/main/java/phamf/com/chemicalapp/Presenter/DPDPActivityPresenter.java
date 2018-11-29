@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import phamf.com.chemicalapp.Abstraction.AbstractClass.Presenter;
+import phamf.com.chemicalapp.CustomView.LessonViewCreator;
 import phamf.com.chemicalapp.Abstraction.Interface.IDPDPActivity;
 import phamf.com.chemicalapp.DPDPActivity;
 import phamf.com.chemicalapp.DPDPMenuActivity;
@@ -40,20 +41,28 @@ public class DPDPActivityPresenter extends Presenter<DPDPActivity> implements ID
         }
     }
 
+
+    /**
+     * Symbol "<>" : TAG_DEVIDER for devide image's info
+     * @see LessonViewCreator.ViewCreator
+     */
     public String convertContent (RO_OrganicMolecule orM) {
         StringBuilder content = new StringBuilder();
         content.append(COMPONENT_DEVIDER).append(BIG_TITLE).append(orM.getId() + ") ")
                 .append(orM.getMolecule_formula())
                 .append(" - " + orM.getName()).append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Tên thay thế: " + orM.getReplace_name()).append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Công thức OSAMA BILADEN : ").append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Công thức OSAMA BILADEN thu gọn: ").append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Số đồng phân: " + orM.getIsomerisms().size()).append(COMPONENT_DEVIDER);
+                .append(CONTENT).append(". - Tên thay thế: " + orM.getReplace_name()).append(COMPONENT_DEVIDER)
+                .append(CONTENT).append(". - Công thức cấu tạo : ")
+                .append(IMAGE + orM.getStructure_image_id() + "<>" + 200 + "<>" + 250).append(COMPONENT_DEVIDER)
+                .append(CONTENT).append(". - Công thức cấu tạo thu gọn: " + orM.getCompact_structure_image_id()).append(COMPONENT_DEVIDER)
+                .append(CONTENT).append(". - Số đồng phân: " + orM.getIsomerisms().size()).append(COMPONENT_DEVIDER);
 
         for (RO_Isomerism iso : orM.getIsomerisms()) {
-            content.append(CONTENT).append("   " + iso.getReplace_name()).append(COMPONENT_DEVIDER)
-                    .append(CONTENT).append("   - Công thức OSAMA BILADEN : ").append(COMPONENT_DEVIDER)
-                    .append(CONTENT).append("   - Công thức OSAMA BILADEN thu gọn: ");
+
+      content.append(CONTENT).append((orM.getIsomerisms().indexOf(iso) + 1)+ ") " + iso.getReplace_name()).append(COMPONENT_DEVIDER)
+             .append(CONTENT).append(".   - Tên thường: " + orM.getNormal_name()).append(COMPONENT_DEVIDER)
+             .append(CONTENT).append(".   - Công thức cấu tạo: " + iso.getCompact_structure_image_id()).append(COMPONENT_DEVIDER)
+             .append(CONTENT).append(".   - Công thức cấu tạo thu gọn: ");
         }
 
         return content.toString();
@@ -63,20 +72,24 @@ public class DPDPActivityPresenter extends Presenter<DPDPActivity> implements ID
     public void convertObjectToData (RO_DPDP dpdp) {
         StringBuilder content = new StringBuilder();
         String title = dpdp.getName();
-        RO_OrganicMolecule orM = dpdp.getOrganicMolecules().get(0);
-        content.append(COMPONENT_DEVIDER).append(BIG_TITLE).append(orM.getId() + ") ")
-                .append(orM.getMolecule_formula())
-                .append(" - " + orM.getName()).append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Tên thay thế: " + orM.getReplace_name()).append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Công thức cấu tạo: ").append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Công thức cấu tạo thu gọn: ").append(COMPONENT_DEVIDER)
-                .append(CONTENT).append(" - Số đồng phân: " + orM.getIsomerisms().size()).append(COMPONENT_DEVIDER);
+        for (RO_OrganicMolecule orM : dpdp.getOrganicMolecules()) {
+            content.append(COMPONENT_DEVIDER).append(BIG_TITLE).append(orM.getId() + ") ")
+               .append(orM.getMolecule_formula()).append(COMPONENT_DEVIDER)
+               .append(CONTENT).append(" - Tên thông thường: " + orM.getNormal_name()).append(COMPONENT_DEVIDER)
+               .append(CONTENT).append(" - Tên thay thế: " + orM.getReplace_name()).append(COMPONENT_DEVIDER)
+               .append(CONTENT).append(" - Công thức cấu tạo: ").append(COMPONENT_DEVIDER)
+               .append(IMAGE).append(orM.getStructure_image_id() + "<>400<>400").append(COMPONENT_DEVIDER)
+               .append(CONTENT).append(" - Công thức cấu tạo thu gọn: " + orM.getCompact_structure_image_id()).append(COMPONENT_DEVIDER)
+               .append(CONTENT).append(" - Số đồng phân: " + orM.getIsomerisms().size()).append(COMPONENT_DEVIDER);
 
-        for (RO_Isomerism iso : orM.getIsomerisms()) {
-            content.append(CONTENT).append("   " + iso.getReplace_name()).append(COMPONENT_DEVIDER)
-                    .append(CONTENT).append("   - Công thức cấu tạo: ").append(COMPONENT_DEVIDER)
-                    .append(CONTENT).append("   - Công thức cấu tạo thu gọn: ");
+            for (RO_Isomerism iso : orM.getIsomerisms()) {
+                content.append(SMALL_TITLE).append("   " + iso.getReplace_name()).append(COMPONENT_DEVIDER)
+                        .append(CONTENT).append("   - Công thức cấu tạo: ").append(COMPONENT_DEVIDER)
+                        .append(IMAGE).append(iso.getStructure_image_id() + "<>400<>400").append(COMPONENT_DEVIDER)
+                        .append(CONTENT).append("   - Công thức cấu tạo thu gọn: ").append(COMPONENT_DEVIDER);
+            }
         }
+
 
         /** Send Data
          * @see DPDPActivity

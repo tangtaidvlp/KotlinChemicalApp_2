@@ -146,9 +146,12 @@ public class ROConverter {
     public static RO_OrganicMolecule toRO_OrganicMolecule (OrganicMolecule organicMolecule) {
         RO_OrganicMolecule ro_organicMolecule = new RO_OrganicMolecule();
         ro_organicMolecule.setId(organicMolecule.getId());
+        ro_organicMolecule.setReplace_name(organicMolecule.getReplace_name());
+        ro_organicMolecule.setNormal_name(organicMolecule.getNormal_name());
         ro_organicMolecule.setCompact_structure_image_id(organicMolecule.getCompact_structure_image_id());
         ro_organicMolecule.setMolecule_formula(organicMolecule.getMolecule_formula());
         ro_organicMolecule.setIsomerisms(toRO_Isomerisms(organicMolecule.getIsomerisms()));
+        ro_organicMolecule.setStructure_image_id(organicMolecule.getStructure_image_id());
         ro_organicMolecule.setId(organicMolecule.getId());
         return ro_organicMolecule;
     }
@@ -156,6 +159,7 @@ public class ROConverter {
     public static RO_Isomerism toRO_Isomerism (Isomerism isomerism) {
         RO_Isomerism ro_isomerism = new RO_Isomerism();
         ro_isomerism.setId(isomerism.getId());
+        ro_isomerism.setStructure_image_id(isomerism.getStructure_image_id());
         ro_isomerism.setCompact_structure_image_id(isomerism.getCompact_structure_image_id());
         ro_isomerism.setMolecule_formula(isomerism.getMolecule_formula());
         ro_isomerism.setNormal_name(isomerism.getNormal_name());

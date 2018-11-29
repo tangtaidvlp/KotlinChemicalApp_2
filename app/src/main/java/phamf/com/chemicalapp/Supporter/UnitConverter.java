@@ -34,6 +34,16 @@ public class UnitConverter {
         return pixel;
     }
 
+    public static int DpToPixel (double dp) {
+        int pixel = (int) Math.round( dp * density );
+        return pixel;
+    }
+
+    public static int DpToPixel (float dp) {
+        int pixel = Math.round(dp * density);
+        return pixel;
+    }
+
     public static int PixelToDp (int pixel) {
         int dp = Math.round(pixel / density);
         return pixel;

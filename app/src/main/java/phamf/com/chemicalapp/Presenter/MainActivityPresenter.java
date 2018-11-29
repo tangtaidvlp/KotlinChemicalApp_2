@@ -1,20 +1,12 @@
 package phamf.com.chemicalapp.Presenter;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import io.realm.RealmList;
-import io.realm.RealmResults;
 import phamf.com.chemicalapp.Abstraction.Interface.IMainActivity;
 import phamf.com.chemicalapp.Abstraction.Interface.OnThemeChangeListener;
 import phamf.com.chemicalapp.Abstraction.AbstractClass.Presenter;
@@ -23,25 +15,18 @@ import phamf.com.chemicalapp.Database.UpdateDatabaseManager;
 import phamf.com.chemicalapp.MainActivity;
 import phamf.com.chemicalapp.Manager.AppThemeManager;
 import phamf.com.chemicalapp.Manager.RecentSearching_CE_Data_Manager;
-import phamf.com.chemicalapp.Model.Chapter;
-import phamf.com.chemicalapp.Model.ChemicalEquation;
-import phamf.com.chemicalapp.Model.Chemical_Element;
-import phamf.com.chemicalapp.Model.DPDP;
+import phamf.com.chemicalapp.Manager.RequireOverlayPermissionManager;
 import phamf.com.chemicalapp.RO_Model.RO_Chapter;
 import phamf.com.chemicalapp.RO_Model.RO_ChemicalEquation;
-import phamf.com.chemicalapp.RO_Model.RO_Chemical_Element;
-import phamf.com.chemicalapp.RO_Model.RO_DPDP;
 import phamf.com.chemicalapp.RO_Model.RO_Lesson;
-import phamf.com.chemicalapp.RO_Model.Recent_SearchingCEs;
-import phamf.com.chemicalapp.Supporter.ROConverter;
 
 import static android.content.Context.MODE_PRIVATE;
+
 
 /**
  * @see MainActivity
  */
 public class MainActivityPresenter extends Presenter<MainActivity> implements IMainActivity.Presenter{
-
 
     private UpdateDatabaseManager updateDB_Manager;
 
@@ -91,8 +76,12 @@ public class MainActivityPresenter extends Presenter<MainActivity> implements IM
 
     }
 
-// Else
+    // For testing, remember to delete
+    public void update () {
+        updateDB_Manager.update_now();
+    }
 
+    // Some functions Else
     public void loadTheme () {
 
         SharedPreferences sharedPreferences = view.getSharedPreferences(AppThemeManager.APP_THEME, MODE_PRIVATE);
@@ -201,22 +190,9 @@ public class MainActivityPresenter extends Presenter<MainActivity> implements IM
     }
 
     public void loadData () {
-        if (onDataLoadListener == null) return;
-
-        if (offlineDB_manager.readOneOf(Recent_SearchingCEs.class) == null) {
-            Recent_SearchingCEs recent_searchingCEs = new Recent_SearchingCEs();
-            offlineDB_manager.addOrUpdateDataOf(Recent_SearchingCEs.class, recent_searchingCEs);
-        }
-
-        ArrayList <RO_ChemicalEquation> data = new ArrayList<>();
-
         recentSearching_ce_data_manager = new RecentSearching_CE_Data_Manager(offlineDB_manager);
-        recentSearching_ce_data_manager.setOnGetDataSuccess(recent_Ces ->
-        {
-            data.addAll(recent_Ces);
-            onDataLoadListener.onDataLoadSuccess(data);
-        });
-
+        recentSearching_ce_data_manager.getData(
+                ces -> onDataLoadListener.onDataLoadSuccess(ces));
     }
 
     public void turnOnNightMode () {
@@ -292,27 +268,10 @@ public class MainActivityPresenter extends Presenter<MainActivity> implements IM
 
     }
 
-    class RequireOverlayPermissionManager {
-        Activity activity;
 
-        Context context;
-
-        RequireOverlayPermissionManager (Activity activity) {
-            this.activity = activity;
-            this.context = activity.getBaseContext();
-        }
-
-        public void requirePermission (int request_code) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + context.getPackageName()));
-                activity.startActivityForResult(intent, request_code);
-            }
-        }
-
-    }
 
 
 
 }
+
 

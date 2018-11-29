@@ -31,8 +31,6 @@ public interface IMainActivity {
 
 
     interface Presenter {
-        // Require overlay permission
-        void requirePermission(int requestCode);
 
         void loadTheme ();
 
@@ -50,11 +48,7 @@ public interface IMainActivity {
 
         void saveDataVersion (long version);
 
-        void setOnDataLoadListener(MainActivityPresenter.DataLoadListener onDataLoadListener);
-
         void setOnThemeChangeListener (OnThemeChangeListener theme);
-
-        void setOnUpdateStatusCheckedListener (MainActivityPresenter.OnUpdateCheckedListener onUpdateChecked);
 
         /** Update recent searching chemical equation list into database **/
         void pushCachingDataToDB ();

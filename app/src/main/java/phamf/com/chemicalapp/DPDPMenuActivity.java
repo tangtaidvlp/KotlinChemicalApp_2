@@ -1,6 +1,9 @@
 package phamf.com.chemicalapp;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,12 +23,13 @@ import phamf.com.chemicalapp.Manager.AppThemeManager;
 import phamf.com.chemicalapp.Presenter.DPDPMenuActivityPresenter;
 import phamf.com.chemicalapp.RO_Model.RO_DPDP;
 import phamf.com.chemicalapp.Manager.FullScreenManager;
+import phamf.com.chemicalapp.ViewModel.MVVM_DPDPMenuActivityPresenter;
 
 /**
  * Presenter
  * @see DPDPMenuActivityPresenter
  */
-public class DPDPMenuActivity extends FullScreenActivity implements IDPDPMenuActivity.View, DPDPMenuActivityPresenter.OnDataLoadSuccess{
+public class DPDPMenuActivity extends FullScreenActivity implements IDPDPMenuActivity.View {
 
     public static final String DPDP_NAME = "dpdp_name";
 
@@ -42,8 +46,9 @@ public class DPDPMenuActivity extends FullScreenActivity implements IDPDPMenuAct
 
     @BindView(R.id.bg_night_mode_dpdp_menu) TextView bg_night_mode;
 
-    private DPDPMenuActivityPresenter dpdpMenuActivityPresenter;
+//    private DPDPMenuActivityPresenter dpdpMenuActivityPresenter;
 
+    private MVVM_DPDPMenuActivityPresenter viewModel;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
@@ -52,9 +57,11 @@ public class DPDPMenuActivity extends FullScreenActivity implements IDPDPMenuAct
 
         ButterKnife.bind(this);
 
-        dpdpMenuActivityPresenter = new DPDPMenuActivityPresenter(this);
+        viewModel = ViewModelProviders.of(this).get(MVVM_DPDPMenuActivityPresenter.class);
 
-        dpdpMenuActivityPresenter.setOnDataLoadListener(this);
+        viewModel.ldt_ro_dpdp.observe(this, ro_dpdps -> {
+            rcv_dpdp_adapter.setData(ro_dpdps);
+        });
 
         setTheme();
 
@@ -62,7 +69,7 @@ public class DPDPMenuActivity extends FullScreenActivity implements IDPDPMenuAct
 
         addEvent();
 
-        dpdpMenuActivityPresenter.loadData();
+        viewModel.loadData();
     }
 
     public void addControl () {
@@ -96,8 +103,4 @@ public class DPDPMenuActivity extends FullScreenActivity implements IDPDPMenuAct
         }
     }
 
-    @Override
-    public void onDataLoadSuccess(ArrayList<RO_DPDP> ro_dpdps) {
-        rcv_dpdp_adapter.setData(ro_dpdps);
-    }
 }

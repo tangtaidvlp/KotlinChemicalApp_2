@@ -4,7 +4,6 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
-import io.realm.RealmChangeListener;
 import io.realm.RealmList;
 import phamf.com.chemicalapp.Database.OfflineDatabaseManager;
 import phamf.com.chemicalapp.RO_Model.RO_Lesson;
@@ -18,29 +17,38 @@ public class RecentLearningLessonDataManager {
 
     private OfflineDatabaseManager offlineDB_manager;
 
-    private OnGetDataSuccess onGetDataSuccess;
-
     private final int MAX_RECENT_LEARNING_LESSON_COUNT = 12;
 
 
-    public RecentLearningLessonDataManager () {
+    public RecentLearningLessonDataManager (OfflineDatabaseManager offline_DBManager) {
+        this.offlineDB_manager = offline_DBManager;
 
+
+        // At the first time, check whether or not an object in realm db storing
+        // a recent_learning_lessons object
+        // If there's no object, create new one
+        // If true, do nothing
+        if (offline_DBManager.readOneOf(Recent_LearningLessons.class) == null) {
+            Recent_LearningLessons recent_learningLessons = new Recent_LearningLessons();
+            offline_DBManager.addOrUpdateDataOf(Recent_LearningLessons.class, recent_learningLessons);
+        }
     }
 
-    public void getData (OfflineDatabaseManager offlineDatabaseManager) {
-        this.offlineDB_manager = offlineDatabaseManager;
-        recent_learningLessons =
-                offlineDatabaseManager
-                        .readAsyncOneOf(Recent_LearningLessons.class,
+    // This function works both data getter and recent learning lessons creator
+    public void getData (OnGetDataSuccess onGetDataSuccess) {
+
+        recent_learningLessons = offlineDB_manager.readAsyncOneOf(Recent_LearningLessons.class,
                                 recent_learningLessons ->
                                 {
                                     recent_lessons = recent_learningLessons.getRecent_learning_lessons();
-                                    onGetDataSuccess.onLoadSuccess(recent_lessons);
+                                    ArrayList<RO_Lesson> data = new ArrayList<>();
+                                    data.addAll(recent_lessons);
+                                    if (onGetDataSuccess != null) onGetDataSuccess.onLoadSuccess(data);
+                                    else Log.e("Null onGetDataSuccess", "Is this in your intent ? (RecentLearningLessonDataManager.java/getData()");
                                 });
     }
 
     public void bringToTop (RO_Lesson lesson) {
-        Log.e("Bring to top", "");
         offlineDB_manager.beginTransaction();
 
         if (recent_lessons.size() < MAX_RECENT_LEARNING_LESSON_COUNT ) {
@@ -73,19 +81,11 @@ public class RecentLearningLessonDataManager {
         offlineDB_manager.commitTransaction();
     }
 
-    public RealmList<RO_Lesson> getData () {
-        return recent_lessons;
-    }
-
     public void updateDB() {
         offlineDB_manager.addOrUpdateDataOf(Recent_LearningLessons.class, this.recent_learningLessons);
     }
 
-    public void setOnGetDataSuccess(OnGetDataSuccess onGetDataSuccess) {
-        this.onGetDataSuccess = onGetDataSuccess;
-    }
-
     public interface OnGetDataSuccess {
-        void onLoadSuccess (RealmList<RO_Lesson> recent_Ces);
+        void onLoadSuccess (ArrayList<RO_Lesson> recent_Ces);
     }
 }

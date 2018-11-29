@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +27,7 @@ public class LessonHtmlViewCreator {
 
     private OfflineDatabaseManager offlineDatabaseManager;
 
-    public static final String PART_DEVIDER = "[part]";
+    public static final String PART_DEVIDER = "[p]";
 
     public static final String DEVIDER = "[*]";
 
@@ -39,8 +40,8 @@ public class LessonHtmlViewCreator {
     }
 
     public void addView (String content) {
-        String [] lesson_parts = content.split("\\[\\*]");
-        for (String part : lesson_parts) {
+        String [] parts = content.split("\\[\\*]");
+        for (String part : parts) {
             if (part.startsWith(IMAGE)) {
                 addImage(part.substring(IMAGE.length() + 1));
             } else {
@@ -58,6 +59,10 @@ public class LessonHtmlViewCreator {
         parent.addView(text);
     }
 
+    public String [] separatePart (String content) {
+        String [] lesson_parts = content.split("\\[p]");
+        return lesson_parts;
+    }
 
     /**
      * Link has form like " <...> ..... </...> [*] image|(width)|(height)|link [*] <...> ...... </...> "
@@ -82,7 +87,6 @@ public class LessonHtmlViewCreator {
             params.setMargins(UnitConverter.DpToPixel(10), UnitConverter.DpToPixel(10), UnitConverter.DpToPixel(10), UnitConverter.DpToPixel(10));
             image.setLayoutParams(params);
             image.setBackground(new BitmapDrawable(context.getResources(), image_bitmap));
-            Log.e("a", image_resource.length + "");
             parent.addView(image);
         } catch (Exception ex) {
             ex.printStackTrace();

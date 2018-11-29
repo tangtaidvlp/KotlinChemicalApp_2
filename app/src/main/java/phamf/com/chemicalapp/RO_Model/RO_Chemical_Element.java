@@ -10,21 +10,21 @@ import io.realm.annotations.PrimaryKey;
 public class RO_Chemical_Element extends RealmObject implements Parcelable{
 
     @PrimaryKey
-    int id;
+    public int id;
 
-    String name = "";
+    public String name = "";
 
-    String symbol = "";
+    public String symbol = "";
 
-    int electron_count = 0;
+    public int electron_count = 0;
 
-    int proton_count = 0;
+    public int proton_count = 0;
 
-    int notron_count = 0;
+    public int notron_count = 0;
 
-    float mass = 0;
+    public float mass = 0;
 
-    String type = "";
+    public String type = "";
 
     int background_color = 0;
 

@@ -19,27 +19,46 @@ public class RecentSearching_CE_Data_Manager {
 
     private OfflineDatabaseManager offline_DBManager;
 
-    private OnGetDataSuccess onGetDataSuccess;
-
     public RecentSearching_CE_Data_Manager(OfflineDatabaseManager offline_DBManager) {
         this.offline_DBManager = offline_DBManager;
 
-        recent_searchingCEs =
-           offline_DBManager
-              .readAsyncOneOf(Recent_SearchingCEs.class
-                  , recent_searchingCEs ->
-        {
-            recent_CEs = recent_searchingCEs.getRecent_searching_ces();
 
-            if (recent_CEs.size() == 0) {
-                offline_DBManager.beginTransaction();
-                recent_CEs.addAll(offline_DBManager.readAllDataOf(RO_ChemicalEquation.class));
-                offline_DBManager.commitTransaction();
-            }
+        // Afraid of this code block is executed after the one beneath
+        if (offline_DBManager.readOneOf(Recent_SearchingCEs.class) == null) {
+            Recent_SearchingCEs recent_searchingCEs = new Recent_SearchingCEs();
+            offline_DBManager.addOrUpdateDataOf(Recent_SearchingCEs.class, recent_searchingCEs);
+        }
 
-            if (onGetDataSuccess != null) onGetDataSuccess.onLoadSuccess(recent_CEs);
-        });
+    }
 
+
+    /**
+     *  This function works as follow:
+     *      Fisrt if recent ce data is null, add all chemical equation of database into it
+     *      Then in uses process, the order of data of recent ce data would be changed
+     *      when user search a chemical equation. Then when user exits app, that order will be saved in database
+     *      The next time user uses this app. The app load that order and bind to search list
+     */
+
+    public void getData (OnGetDataSuccess onGetDataSuccess) {
+        recent_searchingCEs = offline_DBManager.readAsyncOneOf(Recent_SearchingCEs.class
+                , recent_searchingCEs ->
+                {
+                    recent_CEs = recent_searchingCEs.getRecent_searching_ces();
+
+                    // Check if recen_Ces null, then add all default Chemical equations
+                    if (recent_CEs.size() == 0) {
+                        offline_DBManager.beginTransaction();
+                        recent_CEs.addAll(offline_DBManager.readAllDataOf(RO_ChemicalEquation.class));
+                        offline_DBManager.commitTransaction();
+                    }
+
+                    ArrayList<RO_ChemicalEquation> data = new ArrayList<>();
+                    data.addAll(recent_CEs);
+
+                    // This function is implemented by MainActivityPresenter.java
+                    onGetDataSuccess.onLoadSuccess(data);
+                });
     }
 
     public void bringToTop (RO_ChemicalEquation ro_ce) {
@@ -63,15 +82,7 @@ public class RecentSearching_CE_Data_Manager {
         offline_DBManager.addOrUpdateDataOf(Recent_SearchingCEs.class, recent_searchingCEs);
     }
 
-    public RealmList<RO_ChemicalEquation> getData() {
-        return recent_CEs;
-    }
-
-    public void setOnGetDataSuccess (OnGetDataSuccess onGetDataSuccess) {
-        this.onGetDataSuccess = onGetDataSuccess;
-    }
-
     public interface OnGetDataSuccess {
-        void onLoadSuccess (RealmList<RO_ChemicalEquation> recent_Ces);
+        void onLoadSuccess (ArrayList<RO_ChemicalEquation> recent_Ces);
     }
 }

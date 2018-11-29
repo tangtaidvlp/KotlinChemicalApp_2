@@ -6,18 +6,11 @@ import android.widget.LinearLayout;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
-import phamf.com.chemicalapp.Adapter.ViewPager_Lesson_Adapter;
 import phamf.com.chemicalapp.R;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,7 +42,6 @@ public class LessonViewCreatorTest {
                             + SMALL_TITLE + BOLD_TEXT + "Here is Small Title3" + COMPONENT_DEVIDER
                             + CONTENT + BOLD_TEXT + "Here is Content3" + COMPONENT_DEVIDER;
 
-
         Context context = mock(Context.class);
 
         LinearLayout linear_Layout = mock(LinearLayout.class);
@@ -71,6 +63,7 @@ public class LessonViewCreatorTest {
         verify(view_creator, times(3)).addContent(any(String.class), any(String.class));
         verify(view_creator, times(3)).addSmallTitle(any(String.class), any(String.class));
         verify(view_creator, never()).addImageContent(any(String.class),any(Integer.class),any(Integer.class),any(Integer.class),any(Integer.class),any(Integer.class),any(Integer.class) );
+
     }
 
 

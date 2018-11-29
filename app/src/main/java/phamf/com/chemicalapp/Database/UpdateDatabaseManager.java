@@ -9,17 +9,20 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import phamf.com.chemicalapp.Model.Chapter;
 import phamf.com.chemicalapp.Model.ChemicalEquation;
 import phamf.com.chemicalapp.Model.Chemical_Element;
 import phamf.com.chemicalapp.Model.DPDP;
 import phamf.com.chemicalapp.Model.Lesson;
+import phamf.com.chemicalapp.Model.OrganicMolecule;
 import phamf.com.chemicalapp.Model.UpdateData;
 import phamf.com.chemicalapp.Model.UpdateFile;
 import phamf.com.chemicalapp.RO_Model.RO_Chapter;
@@ -102,7 +105,7 @@ public class UpdateDatabaseManager {
 /* / ^ \ */     long _version = version + 1;
 /*   ^   */
 /*   ^   */    if (_version > last_version) {
-/*   ^   */        onASectionUpdated.on_A_Version_Updated_Success(last_version, true);
+/*   ^   */        if (onASectionUpdated != null) onASectionUpdated.on_A_Version_Updated_Success(last_version, true);
 /*   ^   */        return;
 /*   ^   */    }
 /*   ^   */
@@ -117,12 +120,11 @@ public class UpdateDatabaseManager {
 /*   ^   */                // "Update File" is retrieved
 /*   ^   */                assert updateFile != null;
 /*   ^   */                processUpdateFile(updateFile);
-/*   ^   */                Log.e("Chapters size", (updateFile.getChapters() != null) + "");
 /*   ^   */                // firebase database get data asynchronously So can't use for loop to get
 /*   ^   */                // every update file on firebase
 /*   ^   */                // Solution is using Recursive : Đệ quy,
 /*   ^<<<<<<<<<<<<<<<<<<<<<*/ download_And_Process_UpdateFile(_version, last_version);
-                    onASectionUpdated.on_A_Version_Updated_Success(_version, false);
+                    if (onASectionUpdated != null) onASectionUpdated.on_A_Version_Updated_Success(_version, false);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -136,7 +138,6 @@ public class UpdateDatabaseManager {
     }
 
     /**
-     * Download data
      * Include functions:
      *   + process_Lessons()
      *   + getRO_LessonListFromIds()
@@ -202,6 +203,7 @@ public class UpdateDatabaseManager {
 
         } catch (Exception ex) {
             Log.e("Error", "Error source: UpdateDatabaseManager.java");
+            ex.printStackTrace();
         }
     }
 

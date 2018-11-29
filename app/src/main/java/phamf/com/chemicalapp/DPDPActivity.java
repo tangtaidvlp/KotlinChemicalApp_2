@@ -1,8 +1,8 @@
 package phamf.com.chemicalapp;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -15,14 +15,11 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import phamf.com.chemicalapp.Abstraction.Interface.IDPDPActivity;
-import phamf.com.chemicalapp.Abstraction.SpecialDataType.QuickChangeItemListViewAdapter;
 import phamf.com.chemicalapp.Adapter.QuickChange_Organic_Adapter;
 import phamf.com.chemicalapp.CustomView.LessonViewCreator;
 import phamf.com.chemicalapp.Manager.AppThemeManager;
 import phamf.com.chemicalapp.Presenter.DPDPActivityPresenter;
-import phamf.com.chemicalapp.RO_Model.RO_Chemical_Element;
-import phamf.com.chemicalapp.RO_Model.RO_OrganicMolecule;
-import phamf.com.chemicalapp.Manager.FullScreenManager;
+import phamf.com.chemicalapp.ViewModel.MVVM_DPDPActivityPresenter;
 
 import static phamf.com.chemicalapp.Supporter.UnitConverter.DpToPixel;
 
@@ -59,14 +56,29 @@ public class DPDPActivity extends FullScreenActivity implements IDPDPActivity.Vi
 
     Animation fade_out_then_in, left_to_right, right_to_left;
 
-    private DPDPActivityPresenter presenter;
+//    private DPDPActivityPresenter presenter;
+
+    private MVVM_DPDPActivityPresenter viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dpdp);
         ButterKnife.bind(this);
-        presenter = new DPDPActivityPresenter(this);
+
+        viewModel = ViewModelProviders.of(this).get(MVVM_DPDPActivityPresenter.class);
+
+        viewModel.ldt_dpdp_name_data.observe(this, name -> {
+            txt_title.setText(name);
+        });
+
+        viewModel.ldt_content_data.observe(this, content -> {
+            viewCreator.addView(content);
+        });
+
+        viewModel.ldt_ro_organicMolecule.observe(this, ro_organicMolecules -> {
+            qc_organic_adapter.setData(ro_organicMolecules);
+        });
 
         setUpViewCreator();
 
@@ -78,9 +90,7 @@ public class DPDPActivity extends FullScreenActivity implements IDPDPActivity.Vi
 
         addEvent();
 
-        presenter.setOnDataLoadListener (this);
-
-        presenter.loadData();
+        viewModel.loadData(this);
 
     }
 
@@ -129,11 +139,11 @@ public class DPDPActivity extends FullScreenActivity implements IDPDPActivity.Vi
     }
 
     public void addEvent () {
-
+        //qc : Quick Change
         qc_organic_adapter.setOnItemClickListener((item, view) -> {
 //            viewCreator.clearAll();
             board.startAnimation(fade_out_then_in);
-            viewCreator.addView(presenter.convertContent(item));
+            viewModel.convertContent(item);
             lv_quick_change_organic.startAnimation(left_to_right);
             isShowingQCB= false;
         });
@@ -159,13 +169,17 @@ public class DPDPActivity extends FullScreenActivity implements IDPDPActivity.Vi
 
     public void setUpViewCreator () {
         viewCreator = new LessonViewCreator.ViewCreator(this, board);
-        LessonViewCreator.ViewCreator.setMarginBigTitle(DpToPixel(10),DpToPixel(7),DpToPixel(10),0);
-        LessonViewCreator.ViewCreator.setMarginSmallTitle(DpToPixel(13),DpToPixel(4),DpToPixel(10),0);
-        LessonViewCreator.ViewCreator.setMarginContent(DpToPixel(20),DpToPixel(4),DpToPixel(10),0);
-        LessonViewCreator.ViewCreator.setBig_title_text_size(DpToPixel(4));
-        LessonViewCreator.ViewCreator.setSmall_title_text_size(DpToPixel(3));
-        LessonViewCreator.ViewCreator.setSmaller_title_text_size(DpToPixel(3));
-        LessonViewCreator.ViewCreator.setContent_text_size(DpToPixel(3));
+        if (!LessonViewCreator.isSetUp) {
+            LessonViewCreator.ViewCreator.setMarginBigTitle(DpToPixel(10),DpToPixel(7),DpToPixel(10),0);
+            LessonViewCreator.ViewCreator.setMarginSmallTitle(DpToPixel(13),DpToPixel(4),DpToPixel(10),0);
+            LessonViewCreator.ViewCreator.setMarginSmallerTitle(DpToPixel(15),DpToPixel(4),DpToPixel(10),0);
+            LessonViewCreator.ViewCreator.setMarginContent(DpToPixel(20),DpToPixel(4),DpToPixel(10),0);
+            LessonViewCreator.ViewCreator.setBig_title_text_size(DpToPixel(2.2));
+            LessonViewCreator.ViewCreator.setSmall_title_text_size(DpToPixel(2));
+            LessonViewCreator.ViewCreator.setSmaller_title_text_size(DpToPixel(1.8));
+            LessonViewCreator.ViewCreator.setContent_text_size(DpToPixel(1.5));
+            LessonViewCreator.isSetUp = true;
+        }
     }
 
     public void setTheme () {

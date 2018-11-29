@@ -17,14 +17,12 @@ public class RO_ChemicalEquation extends RealmObject implements Cloneable, Parce
 
     private String product;
 
-    // Use for caching equation field value to highlight the filtered equation without lost their beginning data;
 
     private String condition;
 
     private int total_balance_number;
 
     public RO_ChemicalEquation () {
-        //null
     }
 
 

@@ -15,6 +15,7 @@ public interface ILessonMenuActivity {
      */
 
     interface View {
+
         void addControl();
 
         void addEvent();

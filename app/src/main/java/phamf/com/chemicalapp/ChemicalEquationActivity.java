@@ -1,11 +1,9 @@
 package phamf.com.chemicalapp;
 
 import android.app.Activity;
-import android.app.SearchManager;
-import android.support.v7.app.AppCompatActivity;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -13,7 +11,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -23,7 +20,6 @@ import butterknife.ButterKnife;
 import phamf.com.chemicalapp.Abstraction.Interface.IChemicalEquationActivity;
 import phamf.com.chemicalapp.Adapter.Search_CE_RCV_Adapter;
 import phamf.com.chemicalapp.CustomView.VirtualKeyBoardSensor;
-import phamf.com.chemicalapp.Manager.FullScreenManager;
 import phamf.com.chemicalapp.Presenter.ChemicalEquationActivityPresenter;
 import phamf.com.chemicalapp.RO_Model.RO_ChemicalEquation;
 
@@ -35,15 +31,19 @@ public class ChemicalEquationActivity extends FullScreenActivity implements IChe
 
     public static final String CHEMICAL_EQUATION = "Chemical_Equation";
 
-
+    // Chất tham gia
     @BindView(R.id.txt_chem_adding_chemicals) TextView txt_adding_chemicals;
 
+    // Chất sản phẩm
     @BindView(R.id.txt_chem_product) TextView txt_product;
 
+    // Điều kiện phản ứng
     @BindView(R.id.txt_chem_conditions) TextView txt_conditions;
 
+    // Tổng hệ số cân bằng
     @BindView(R.id.txt_chem_total_balance_number) TextView txt_total_balance_number;
 
+    // Phenonema : hiện tượng
     @BindView(R.id.txt_chem_phenomena) TextView txt_phenomena;
 
     @BindView(R.id.title_chem_adding_chems) TextView title_chems_adding;
@@ -70,6 +70,7 @@ public class ChemicalEquationActivity extends FullScreenActivity implements IChe
     public InputMethodManager virtualKeyboardManager;
 
     private Animation fade_in, fade_out;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,10 +108,7 @@ public class ChemicalEquationActivity extends FullScreenActivity implements IChe
 
     public void addEvent () {
         rcv_search_adapter.setOnItemClickListener((view, equation, position) -> {
-            txt_adding_chemicals.setText(equation.getAddingChemicals());
-            txt_product.setText(equation.getProduct());
-            txt_conditions.setText(equation.getCondition());
-            txt_total_balance_number.setText(String.valueOf(equation.getTotal_balance_number()));
+            bindData(equation);
             search_view_parent.startAnimation(fade_out);
             rcv_search_adapter.isSearching(false);
             hideSoftKeyboard(ChemicalEquationActivity.this);
@@ -126,6 +124,13 @@ public class ChemicalEquationActivity extends FullScreenActivity implements IChe
         });
 
         btn_back.setOnClickListener(v -> finish());
+    }
+
+    private void bindData(RO_ChemicalEquation equation) {
+        txt_adding_chemicals.setText(equation.getAddingChemicals());
+        txt_product.setText(equation.getProduct());
+        txt_conditions.setText(equation.getCondition());
+        txt_total_balance_number.setText(equation.getTotal_balance_number());
     }
 
     public void loadAnim () {
@@ -200,16 +205,11 @@ public class ChemicalEquationActivity extends FullScreenActivity implements IChe
 
     @Override
     public void onGettingChemicalEquation(RO_ChemicalEquation chemicalEquation) {
-        txt_adding_chemicals.setText(chemicalEquation.getAddingChemicals());
-        txt_product.setText(chemicalEquation.getProduct());
-        txt_conditions.setText(chemicalEquation.getCondition());
-        txt_phenomena.setText("");
-        txt_total_balance_number.setText(chemicalEquation.getTotal_balance_number() + "");
+        bindData(chemicalEquation);
     }
 
     @Override
     public void onDataLoadedFromDatabase (ArrayList<RO_ChemicalEquation> chemicalEquations) {
-        Log.e("Length", chemicalEquations.size() + " a");
         rcv_search_adapter.setData(chemicalEquations);
     }
 }

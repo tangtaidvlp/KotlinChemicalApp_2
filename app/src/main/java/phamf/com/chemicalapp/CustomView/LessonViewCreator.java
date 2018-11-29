@@ -16,6 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Observable;
+import java.util.Random;
+
 import phamf.com.chemicalapp.Database.OfflineDatabaseManager;
 import phamf.com.chemicalapp.R;
 import phamf.com.chemicalapp.RO_Model.RO_Chemical_Image;
@@ -27,6 +30,7 @@ public class LessonViewCreator {
 
     private ViewPager_Lesson_Adapter viewPager_adapter;
 
+    // all of this content identifier has same length and now it's 11
     public static final String PART_DEVIDER = "<pa_divi>";
 
     public static final String BOLD_TEXT = "<<boldTxt>>";
@@ -34,6 +38,8 @@ public class LessonViewCreator {
     public static final String ITALICED_TEXT = "<<italTxt>>";
 
     public static final String NORMAL_TEXT = "<<normTxt>>";
+
+    public static boolean isSetUp = false;
 
     public LessonViewCreator (ViewPager_Lesson_Adapter viewPager_adapter) {
 
@@ -59,7 +65,7 @@ public class LessonViewCreator {
         OfflineDatabaseManager offlineDatabaseManager;
 
         // Text data usually has form as follow : <<B_TITLE>><<BoldTxt>>Hello World
-        // 11 is length of <<B_TITLE>> (Type) and the START position of <<BoldTxt>> (Text style) too
+        // 11 is length of <<B_TITLE>> (Type) as well as the START position of <<BoldTxt>> (Text style)
         // 22 is END position of <<BoldTxt>> and START position of content too
         private static final int BEGIN_TEXT_STYLE_POSITION = 11;
 
@@ -73,6 +79,8 @@ public class LessonViewCreator {
         private static int bt_mLeft, bt_mTop, bt_mRight, bt_mBottom, bt_width = WRAP_CONTENT, bt_height = WRAP_CONTENT;
 
         private static int smt_mLeft, smt_mTop, smt_mRight, smt_mBottom, smt_width = WRAP_CONTENT, smt_height = WRAP_CONTENT;
+
+        private static int smlt_mLeft, smlt_mTop, smlt_mRight, smlt_mBottom, smlt_width = WRAP_CONTENT, smlt_height = WRAP_CONTENT;
 
         private static int content_mLeft, content_mTop, content_mRight, content_mBottom, content_width = WRAP_CONTENT, content_height = WRAP_CONTENT;
 
@@ -92,7 +100,6 @@ public class LessonViewCreator {
             bt_mTop = mTop;
             bt_mRight = mRight;
             bt_mBottom = mBottom;
-
         }
 
         public static void setMarginSmallTitle (int mLeft,int  mTop,int  mRight,int  mBottom) {
@@ -100,6 +107,13 @@ public class LessonViewCreator {
             smt_mTop = mTop;
             smt_mRight = mRight;
             smt_mBottom = mBottom;
+        }
+
+        public static void setMarginSmallerTitle (int mLeft,int  mTop,int  mRight,int  mBottom) {
+            smlt_mLeft = mLeft;
+            smlt_mTop = mTop;
+            smlt_mRight = mRight;
+            smlt_mBottom = mBottom;
         }
 
         public static void setMarginContent (int mLeft,int  mTop,int  mRight,int  mBottom) {
@@ -156,7 +170,7 @@ public class LessonViewCreator {
             TextView textView = new TextView(context);
             textView.setText(Html.fromHtml(title));
             textView.setTextSize(DpToPixel(small_title_text_size));
-            textView.setTextColor(Color.parseColor("#BA1308"));
+            textView.setTextColor(Color.parseColor("#008080"));
             textView.setTypeface(textView.getTypeface(), getTextStyle(style));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(smt_width, smt_height);
@@ -169,11 +183,11 @@ public class LessonViewCreator {
             TextView textView = new TextView(context);
             textView.setText(Html.fromHtml(title));
             textView.setTextSize(DpToPixel(smaller_title_text_size));
-            textView.setTextColor(Color.parseColor("#BA1308"));
+            textView.setTextColor(Color.parseColor("#191970"));
             textView.setTypeface(textView.getTypeface(), getTextStyle(style));
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(smt_width, smt_height);
-            params.setMargins(smt_mLeft, smt_mTop, smt_mRight, smt_mBottom);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(smlt_width, smlt_height);
+            params.setMargins(smlt_mLeft, smlt_mTop, smlt_mRight, smlt_mBottom);
             textView.setLayoutParams(params);
             parent.addView(textView);
         }
@@ -182,8 +196,8 @@ public class LessonViewCreator {
                                      int mLeft, int mTop, int mRight, int mBottom) {
 
             RO_Chemical_Image image_resouces = offlineDatabaseManager.readOneObjectOf(RO_Chemical_Image.class, "link", imageId);
+            Log.e("What the hell ?", imageId + "...");
             byte[] byte_code_resouces = image_resouces.getByte_code_resouces();
-            Log.e("Byte", " " + byte_code_resouces.length);
             Bitmap image_bitmap = BitmapFactory.decodeByteArray(byte_code_resouces, 0, byte_code_resouces.length);
             ImageView imageView = new ImageView(context);
             imageView.setBackground(new BitmapDrawable(context.getResources(), image_bitmap));
@@ -194,22 +208,21 @@ public class LessonViewCreator {
         }
 
 
-        private static final int IMAGE_ID = 1;
+        private static final int IMAGE_LINK = 1;
         private static final int IMAGE_WIDTH = 2;
         private static final int IMAGE_HEIGHT = 3;
-
         public void addView (String content) {
             String [] component_list = content.split(COMPONENT_DEVIDER);
             for (String component : component_list) {
-                if (component != "") {
 
+                if (!component.trim().equals("")) {
+                    component = component.trim();
                     if (component.startsWith(IMAGE)) {
                         try {
-                            String [] image_info = component.split(TAG_DIVIDER);
-                            //The position of 3 infomation below is arrange in info array follow the order"
-                            // IMAGE_ID : 1 ; IMAGE_WIDTH : 2 ; IMAGE_HEIGHT : 3
+                            //all Image has form like <<picture<> link <> width <> height
 
-                            String id = image_info[IMAGE_ID];
+                            String [] image_info = component.split(TAG_DIVIDER);
+                            String id = image_info[IMAGE_LINK];
                             int width = Integer.valueOf(image_info[IMAGE_WIDTH]);
                             int height = Integer.valueOf(image_info[IMAGE_HEIGHT]);
 
@@ -225,36 +238,78 @@ public class LessonViewCreator {
                         }
 
                     } else if (component.startsWith(SMALL_TITLE)) {
-                        String text_content = component.substring(END_TEXT_STYLE_POSITION);
-                        String text_style = component.substring(0, BEGIN_TEXT_STYLE_POSITION);
-                        addSmallTitle(text_content, text_style);
+
+                        String [] small_title_info = process_GetTextInfo(component);
+                        addSmallTitle(small_title_info[TEXT_CONTENT], small_title_info[TEXT_STYLE]);
 
                     } else if (component.startsWith(BIG_TITLE)) {
-                        // Get Type of Text
-                        String text_style = component.substring(0, BEGIN_TEXT_STYLE_POSITION);
-                        // Get Text style
-                        String text_content = component.substring(END_TEXT_STYLE_POSITION);
-                        addBigTitle(text_content, text_style);
+
+                        String [] big_title_info = process_GetTextInfo(component);
+
+                        addBigTitle(big_title_info[TEXT_CONTENT], big_title_info[TEXT_STYLE]);
+
+                    } else if (component.startsWith(SMALLER_TITLE)) {
+
+                        String [] smaller_title_info = process_GetTextInfo(component);
+                        addSmallerTitle(smaller_title_info[TEXT_CONTENT], smaller_title_info[TEXT_STYLE]);
 
                     } else if (component.startsWith(CONTENT)) {
-                        String text_content = component.substring(END_TEXT_STYLE_POSITION);
-                        String text_style = component.substring(0, BEGIN_TEXT_STYLE_POSITION);
-                        addContent(text_content, text_style);
+
+                        String [] content_info = process_GetTextInfo(component);
+                        addContent(content_info[TEXT_CONTENT], content_info[TEXT_STYLE]);
+
+                    } else {
+                        Log.e("wrong component " + new Random().nextInt(9), component);
                     }
                 }
             }
         }
 
+        private boolean hasTextStyle (String content) {
+            return content.startsWith(BOLD_TEXT) || content.startsWith(ITALICED_TEXT);
+        }
+
         private int getTextStyle (String type) {
+
+            if (type == null) {
+                Log.e("Null style", "is " + type);
+                return Typeface.NORMAL;
+            }
 
             if (type == BOLD_TEXT) {
                 return Typeface.BOLD;
             } else if (type == ITALICED_TEXT) {
                 return Typeface.BOLD_ITALIC;
             } else {
+                Log.e("Wrong style", "is " + type);
                 return Typeface.NORMAL;
             }
+        }
 
+
+        private final int TEXT_CONTENT = 0;
+
+        private final int TEXT_STYLE = 1;
+
+        private String [] process_GetTextInfo (String text) {
+            String [] text_info = new String [2];
+            String text_style = "";
+            String text_content = "";
+            //Remove identifiers like <<smlr_tt>>, <<b_title>>, <<s_title>>
+            text = text.substring(BEGIN_TEXT_STYLE_POSITION);
+
+            if (hasTextStyle(text)) {
+
+                text_style = text.substring(BEGIN_TEXT_STYLE_POSITION, END_TEXT_STYLE_POSITION);
+                text_content = text.substring(END_TEXT_STYLE_POSITION);
+
+            } else text_content = text;
+
+            text_info [TEXT_CONTENT] = text_content;
+            text_info [TEXT_STYLE] = text_style;
+
+            return text_info;
         }
     }
 }
+

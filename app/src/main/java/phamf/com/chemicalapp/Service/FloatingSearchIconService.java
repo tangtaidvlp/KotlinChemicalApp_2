@@ -1,42 +1,19 @@
 package phamf.com.chemicalapp.Service;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-
-import phamf.com.chemicalapp.Adapter.Search_CE_RCV_Adapter;
-import phamf.com.chemicalapp.ChemicalEquationActivity;
-import phamf.com.chemicalapp.CustomView.VirtualKeyBoardSensor;
 import phamf.com.chemicalapp.MainActivity;
-import phamf.com.chemicalapp.Manager.FullScreenManager;
 import phamf.com.chemicalapp.R;
-import phamf.com.chemicalapp.RO_Model.RO_ChemicalEquation;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -126,7 +103,6 @@ public class FloatingSearchIconService extends Service {
 
     private void OnIconClick () {
         Intent startSearchIntent = new Intent(getApplicationContext(), MainActivity.class);
-        startSearchIntent.putExtra(MainActivity.QUICK_SEACH, true);
         startSearchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startSearchIntent);
         stopSelf();

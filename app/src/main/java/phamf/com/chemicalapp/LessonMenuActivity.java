@@ -1,39 +1,30 @@
 package phamf.com.chemicalapp;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.ArrayList;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import phamf.com.chemicalapp.Abstraction.AbstractClass.RCV_Menu_Adapter;
 import phamf.com.chemicalapp.Abstraction.Interface.ILessonMenuActivity;
 import phamf.com.chemicalapp.Adapter.Chapter_Menu_Adapter;
 import phamf.com.chemicalapp.Adapter.Lesson_Menu_Adapter;
 import phamf.com.chemicalapp.Manager.AppThemeManager;
-import phamf.com.chemicalapp.Presenter.LessonMenuActivityPresenter;
-import phamf.com.chemicalapp.RO_Model.RO_Chapter;
-import phamf.com.chemicalapp.RO_Model.RO_Lesson;
-import phamf.com.chemicalapp.Manager.FullScreenManager;
+import phamf.com.chemicalapp.ViewModel.MVVM_LessonMenuActivityPresenter;
 
 
 /**
  * Presenter
- * @see LessonMenuActivityPresenter
+ * @see MVVM_LessonMenuActivityPresenter
  */
-public class LessonMenuActivity extends FullScreenActivity implements ILessonMenuActivity.View, LessonMenuActivityPresenter.DataLoadListener{
+public class LessonMenuActivity extends FullScreenActivity implements ILessonMenuActivity.View{
 
     public static final String LESSON_NAME = "lesson_name";
 
@@ -62,7 +53,7 @@ public class LessonMenuActivity extends FullScreenActivity implements ILessonMen
     Animation turnOnChapterButton_appear, chapter_appear, lesson_appear;
 
 
-    LessonMenuActivityPresenter activityPresenter;
+    MVVM_LessonMenuActivityPresenter viewModel;
 
 
     @Override
@@ -76,9 +67,7 @@ public class LessonMenuActivity extends FullScreenActivity implements ILessonMen
 
         overridePendingTransition(R.anim.fade_in , R.anim.fade_out);
 
-        activityPresenter = new LessonMenuActivityPresenter(this);
-
-        activityPresenter.setOnDataLoadListener(this);
+        setUpViewModel();
 
         setTheme();
 
@@ -88,21 +77,26 @@ public class LessonMenuActivity extends FullScreenActivity implements ILessonMen
 
         addEvent();
 
-        activityPresenter.loadData();
+        viewModel.loadData();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        activityPresenter.clearAllListenerToDatabase();
-        activityPresenter.pushCachingDataToDB();
+        viewModel.clearAllListenerToDatabase();
+        viewModel.pushCachingDataToDB();
     }
 
-    @Override
-    public void onDataLoadedSuccess(ArrayList<RO_Chapter> data) {
-        chapter_menu_adapter.setData(data);
-        circle_progress_bar_lesson_menu.setVisibility(View.GONE);
+
+    public void setUpViewModel () {
+        viewModel = ViewModelProviders.of(this).get(MVVM_LessonMenuActivityPresenter.class);
+
+        viewModel.l_data.observe(this, ro_chapters -> {
+            chapter_menu_adapter.setData(ro_chapters);
+            circle_progress_bar_lesson_menu.setVisibility(View.GONE);
+        });
     }
+
 
     public void addControl() {
         chapter_menu_adapter = new Chapter_Menu_Adapter(this);
@@ -144,7 +138,7 @@ public class LessonMenuActivity extends FullScreenActivity implements ILessonMen
             Intent intent = new Intent(LessonMenuActivity.this, LessonActivity.class);
             intent.putExtra(LESSON_NAME, item);
             startActivity(intent);
-            activityPresenter.bringToTop(item);
+            viewModel.bringToTop(item);
         });
 
 

@@ -220,7 +220,6 @@ public class OnlineDatabaseManager {
         });
     }
 
-
     // Not offical
     public void getNeedingUpdate_BangTuanHoan () {
         updateDataRef.child(BANG_TUAN_HOAN).addValueEventListener(new ValueEventListener() {

@@ -21,10 +21,8 @@ public class ChemicalElementActivityPresenter extends Presenter implements IChem
     }
 
     public void loadData () {
-        Bundle bundle = view.getIntent().getExtras();
-        RO_Chemical_Element chem_element = bundle.getParcelable(BangTuanHoangActivity.CHEM_ELEMENT);
         // Don't check null to show error when we forget to register to this listener
-        onDataReceived.onDataReceived(chem_element);
+        onDataReceived.onDataReceived(new ChemicalElementDataGetter(view).getData());
     }
 
     public void setOnDataReceived (OnDataReceived onDataReceived) {
@@ -33,5 +31,19 @@ public class ChemicalElementActivityPresenter extends Presenter implements IChem
 
     public interface OnDataReceived {
         void onDataReceived (RO_Chemical_Element chemical_element);
+    }
+}
+
+class ChemicalElementDataGetter {
+    Activity view;
+
+    public ChemicalElementDataGetter (Activity view) {
+        this.view = view;
+    }
+
+    public RO_Chemical_Element getData () {
+        Bundle bundle = view.getIntent().getExtras();
+        RO_Chemical_Element chem_element = bundle.getParcelable(BangTuanHoangActivity.CHEM_ELEMENT);
+        return chem_element;
     }
 }

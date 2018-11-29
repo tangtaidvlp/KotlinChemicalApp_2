@@ -1,18 +1,10 @@
 package phamf.com.chemicalapp.Adapter;
 
-import android.app.FragmentManager;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 import phamf.com.chemicalapp.Fragment.LessonPartFragment;
 

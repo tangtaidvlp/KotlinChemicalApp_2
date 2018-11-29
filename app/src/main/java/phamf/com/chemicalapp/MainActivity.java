@@ -2,34 +2,28 @@ package phamf.com.chemicalapp;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.Objects;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,114 +32,64 @@ import io.realm.Realm;
 import phamf.com.chemicalapp.Abstraction.Interface.IMainActivity;
 import phamf.com.chemicalapp.Abstraction.Interface.OnThemeChangeListener;
 import phamf.com.chemicalapp.Adapter.Search_CE_RCV_Adapter;
-import phamf.com.chemicalapp.CustomAnimation.FadedInAnim;
-import phamf.com.chemicalapp.CustomAnimation.FadedOutAnim;
-import phamf.com.chemicalapp.CustomView.ViewPagerIndicator;
-import phamf.com.chemicalapp.Database.OfflineDatabaseManager;
-import phamf.com.chemicalapp.Database.UpdateDatabaseManager;
 import phamf.com.chemicalapp.Manager.AppThemeManager;
 import phamf.com.chemicalapp.Manager.FloatingSearchViewManager;
+import phamf.com.chemicalapp.Manager.RequireOverlayPermissionManager;
 import phamf.com.chemicalapp.Presenter.MainActivityPresenter;
-import phamf.com.chemicalapp.RO_Model.RO_ChemicalEquation;
-import phamf.com.chemicalapp.RO_Model.RO_Chemical_Image;
-import phamf.com.chemicalapp.Service.FloatingSearchIconService;
 import phamf.com.chemicalapp.Manager.FontManager;
 import phamf.com.chemicalapp.CustomView.VirtualKeyBoardSensor;
-import phamf.com.chemicalapp.Manager.FullScreenManager;
-
+import phamf.com.chemicalapp.ViewModel.MVVM_MainActivityPresenter;
 
 /**
  * Presenter
  * @see MainActivityPresenter
  */
-public class MainActivity extends FullScreenActivity implements IMainActivity.View, MainActivityPresenter.DataLoadListener, OnThemeChangeListener, MainActivityPresenter.OnUpdateCheckedListener {
+public class MainActivity extends FullScreenActivity implements IMainActivity.View, OnThemeChangeListener, MVVM_MainActivityPresenter.OnUpdateCheckedListener {
 
-    static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084;
-
-    public static final String QUICK_SEACH = "is_quick_search";
+    static final int CODE_DRAW_OVER_OTHER_APP_PERMISSION = 21;
 
     @BindView(R.id.txt_lesson) TextView txt_lesson;
-
     @BindView(R.id.txt_recent_lesson) TextView txt_recent_lesson;
-
     @BindView(R.id.txt_dongphan_danhphap) TextView txt_dongphan_danhphap;
-
     @BindView(R.id.txt_bangtuanhoang) TextView txt_bangtuanhoang;
-
     @BindView(R.id.txt_quick_search) TextView txt_quick_search;
-
     @BindView(R.id.bg_escape_search_mode) TextView bg_escape_search_mode;
-
     @BindView(R.id.btn_bangtuanhoan) ImageButton btn_bangtuanhoang;
-
     @BindView(R.id.btn_dongphan_danhphap) ImageButton btn_dongphan_danhphap;
-
     @BindView(R.id.btn_lesson) ImageButton btn_lesson;
-
     @BindView(R.id.btn_recent_lesson) ImageButton btn_recent_lesson;
-
     @BindView(R.id.btn_quick_search) ImageButton btn_quick_search;
-
     @BindView(R.id.btn_search) Button btn_search;
-
     @BindView(R.id.btn_setting) Button btn_setting;
-
     @BindView(R.id.btn_turnOff_search) Button btn_turnOff_search;
-
     @BindView(R.id.edt_search) VirtualKeyBoardSensor edt_search;
-
     @BindView(R.id.main_activity_drawer_layout) DrawerLayout drawer_Layout;
-
     @BindView(R.id.nav_view) NavigationView nav_view;
-
     @BindView(R.id.rcv_search) RecyclerView rcv_search;
-
     private Search_CE_RCV_Adapter rcv_search_adapter;
 
-
-
     // Navigation View
-
     @BindView(R.id.btn_widget_color_1) Button btn_widget_color_1;
-
     @BindView(R.id.btn_widget_color_2) Button btn_widget_color_2;
-
     @BindView(R.id.btn_widget_color_3) Button btn_widget_color_3;
-
     @BindView(R.id.btn_widget_color_4) Button btn_widget_color_4;
-
     @BindView(R.id.btn_widget_color_5) Button btn_widget_color_5;
-
     @BindView(R.id.btn_widget_color_6) Button btn_widget_color_6;
-
     @BindView(R.id.btn_background_color_1) Button btn_background_color_1;
-
     @BindView(R.id.btn_background_color_2) Button btn_background_color_2;
-
     @BindView(R.id.btn_background_color_3) Button btn_background_color_3;
-
     @BindView(R.id.btn_background_color_4) Button btn_background_color_4;
-
     @BindView(R.id.btn_background_color_5) Button btn_background_color_5;
-
     @BindView(R.id.btn_background_color_6) Button btn_background_color_6;
 
     @BindView(R.id.btn_update) Button btn_update;
-
     @BindView(R.id.btn_set_as_defaut) Button btn_set_as_defaut;
-
     @BindView(R.id.btn_top_turn_off_search) Button btn_top_turn_off_search_mode;
-
     @BindView(R.id.search_chem_equation_view_parent) RelativeLayout search_view_parent;
-
     @BindView(R.id.bg_night_mode) TextView bg_night_mode;
-
     @BindView(R.id.txt_update_status) TextView txt_update_status;
-
     @BindView(R.id.txt_update_version) TextView txt_update_version;
-
     @BindView(R.id.linearlayout_version) LinearLayout linearLayout_version;
-
     @BindView(R.id.sw_night_mode) Switch sw_night_mode;
 
 
@@ -161,9 +105,11 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
 
     private FloatingSearchViewManager floatingSearchViewManager;
 
-    private MainActivityPresenter activityPresenter;
+    private RequireOverlayPermissionManager overlayPermissionManager;
 
     Animation fade_out, fade_in;
+
+    private MVVM_MainActivityPresenter viewModel;
 
     @SuppressLint("HandlerLeak")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -172,42 +118,30 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /** Needing Optimize **/
+        // Needing Optimize
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
 
         ButterKnife.bind(this);
 
         Realm.init(this);
 
-        activityPresenter = new MainActivityPresenter(this);
-
-        activityPresenter.setOnThemeChangeListener(this);
-
-        activityPresenter.setOnDataLoadListener(this);
-
-        activityPresenter.setOnUpdateStatusCheckedListener(this);
-
-        activityPresenter.loadTheme();
-
-        activityPresenter.addDefaultDataOnceTime();
-
         createNecessaryInfo();
 
-        /**Mark to ez to see**/
+        setUpViewModel();
+
+        setFont();
+
+        overlayPermissionManager.requirePermission(CODE_DRAW_OVER_OTHER_APP_PERMISSION);
+
         loadAnim();
 
         addControl();
 
-        activityPresenter.loadData();
+        viewModel.loadData();
 
         addEvent();
 
-        activityPresenter.requirePermission(CODE_DRAW_OVER_OTHER_APP_PERMISSION);
-
-        activityPresenter.checkUpdateStatus();
-
-        if_open_activity_for_quick_search();
-
+        viewModel.checkUpdateStatus();
     }
 
     @Override
@@ -232,8 +166,8 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
     @Override
     protected void onPause() {
         super.onPause();
-        activityPresenter.pushCachingDataToDB();
-        activityPresenter.saveTheme();
+        viewModel.pushCachingDataToDB();
+        viewModel.saveTheme();
     }
 
     @Override
@@ -295,6 +229,7 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
             AppThemeManager.backgroundColor = color;
             setTheme();
     }
+
     @OnClick({R.id.btn_widget_color_1,
             R.id.btn_widget_color_2,
             R.id.btn_widget_color_3,
@@ -357,14 +292,26 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
         setTheme();
     }
 
+    private void setUpViewModel () {
+
+        viewModel = ViewModelProviders.of(this).get(MVVM_MainActivityPresenter.class);
+
+        viewModel.ldt_ro_chemicalEquation.observe(this, ro_chemicalEquations -> {
+            rcv_search_adapter.setData(ro_chemicalEquations);
+        });
+
+        viewModel.setOnThemeChangeListener(this);
+
+        viewModel.setOnUpdateStatusCheckedListener(MainActivity.this);
+
+        viewModel.loadTheme();
+    }
+
     public void createNecessaryInfo() {
         FontManager.createFont(getAssets());
-
-        setFont();
-
         virtualKeyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-
         floatingSearchViewManager = new FloatingSearchViewManager(MainActivity.this);
+        overlayPermissionManager = new RequireOverlayPermissionManager(MainActivity.this);
     }
 
     public void addEvent () {
@@ -423,7 +370,7 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
             rcv_search_adapter.getList().add(0, equation);
             rcv_search_adapter.notifyDataSetChanged();
             // Update the top in database
-            activityPresenter.bringToTop(equation);
+            viewModel.bringToTop(equation);
 
             bg_escape_search_mode.performClick();
             Intent intent = new Intent(MainActivity.this, ChemicalEquationActivity.class);
@@ -432,24 +379,22 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
         });
 
 
-        btn_set_as_defaut.setOnClickListener(v -> activityPresenter.setThemeDefaut());
+        btn_set_as_defaut.setOnClickListener(v -> viewModel.setThemeDefaut());
 
 
-        btn_update.setOnClickListener (v -> {
-            activityPresenter.update(() -> {
-                startActivity(new Intent(MainActivity.this, MainActivity.class));
-                finish();
-            });
-        });
+        btn_update.setOnClickListener (v -> viewModel.update(() -> {
+            startActivity(new Intent(MainActivity.this, MainActivity.class));
+            finish();
+        }));
 
 
         sw_night_mode.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 bg_night_mode.setVisibility(View.VISIBLE);
-                activityPresenter.turnOnNightMode();
+                viewModel.turnOnNightMode();
             } else {
                 bg_night_mode.setVisibility(View.GONE);
-                activityPresenter.turnOffNightMode();
+                viewModel.turnOffNightMode();
             }
         });
 
@@ -559,28 +504,12 @@ public class MainActivity extends FullScreenActivity implements IMainActivity.Vi
         Toast.makeText(this, "Show", Toast.LENGTH_SHORT).show();
     }
 
-    // Check if this activity is opened by Quick Search Icon, the search view will be turned on
-    private void if_open_activity_for_quick_search() {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null){
-            boolean getIntentForQuickSearch = bundle.getBoolean(QUICK_SEACH, false);
-            if (getIntentForQuickSearch) {
-                btn_search.performClick();
-            }
-        }
-
-    }
-
-    @Override
-    public void onDataLoadSuccess(ArrayList<RO_ChemicalEquation> ro_chemicalEquations) {
-        rcv_search_adapter.setData(ro_chemicalEquations);
-    }
-
     @Override
     public void onThemeChange() {
         setTheme();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onStatusChecked(boolean isAvailable, long version) {
         if (isAvailable) {

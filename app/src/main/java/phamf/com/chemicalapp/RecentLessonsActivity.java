@@ -1,5 +1,6 @@
 package phamf.com.chemicalapp;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +21,7 @@ import phamf.com.chemicalapp.Manager.AppThemeManager;
 import phamf.com.chemicalapp.Manager.RecentSearching_CE_Data_Manager;
 import phamf.com.chemicalapp.Presenter.RecentLessonActivityPresenter;
 import phamf.com.chemicalapp.RO_Model.RO_Lesson;
+import phamf.com.chemicalapp.ViewModel.MVVM_RecentLessonActivityPresenter;
 
 
 /**
@@ -27,7 +29,7 @@ import phamf.com.chemicalapp.RO_Model.RO_Lesson;
  * @see RecentLessonActivityPresenter
  */
 
-public class RecentLessonsActivity extends FullScreenActivity implements IRecentLessonActivity.View, RecentLessonActivityPresenter.DataLoadListener {
+public class RecentLessonsActivity extends FullScreenActivity {
 
 
     @BindView(R.id.rcv_recent_lesson_menu) RecyclerView rcv_recent_lesson_menu;
@@ -41,7 +43,7 @@ public class RecentLessonsActivity extends FullScreenActivity implements IRecent
 
     @BindView(R.id.btn_recent_lesson_back) Button btn_back;
 
-    private RecentLessonActivityPresenter activityPresenter;
+    MVVM_RecentLessonActivityPresenter viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class RecentLessonsActivity extends FullScreenActivity implements IRecent
 
         ButterKnife.bind(this);
 
-        activityPresenter = new RecentLessonActivityPresenter(this);
+        setUpViewModel();
 
         setTheme();
 
@@ -58,16 +60,21 @@ public class RecentLessonsActivity extends FullScreenActivity implements IRecent
 
         addEvent();
 
-        activityPresenter.setOnDataLoadListener(this);
+        viewModel.loadData();
 
-        activityPresenter.loadData();
-        
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        activityPresenter.pushCachingData();
+        viewModel.pushCachingData();
+    }
+
+    private void setUpViewModel() {
+        viewModel = ViewModelProviders.of(this).get(MVVM_RecentLessonActivityPresenter.class);
+        viewModel.ldt_recent_lessons.observe(this, recent_lessons -> {
+            rcv_recent_lesson_menu_adapter.setData(recent_lessons);
+        });
     }
 
     public void addControl() {
@@ -86,7 +93,7 @@ public class RecentLessonsActivity extends FullScreenActivity implements IRecent
             Intent intent = new Intent(RecentLessonsActivity.this, LessonActivity.class);
             intent.putExtra(LessonMenuActivity.LESSON_NAME, item);
             startActivity(intent);
-            activityPresenter.bringToTop(item);
+            viewModel.bringToTop(item);
         });
 
         btn_back.setOnClickListener(v -> finish());
@@ -101,8 +108,4 @@ public class RecentLessonsActivity extends FullScreenActivity implements IRecent
         }
     }
 
-    @Override
-    public void onDataLoadSuccess(ArrayList<RO_Lesson> ro_lessons) {
-        rcv_recent_lesson_menu_adapter.setData(ro_lessons);
-    }
 }

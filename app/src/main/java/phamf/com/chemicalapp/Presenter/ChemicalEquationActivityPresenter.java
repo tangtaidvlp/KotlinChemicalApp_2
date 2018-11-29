@@ -1,5 +1,6 @@
 package phamf.com.chemicalapp.Presenter;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
@@ -24,31 +25,18 @@ public class ChemicalEquationActivityPresenter extends Presenter<ChemicalEquatio
 
     private OfflineDatabaseManager offlineDatabaseManager;
 
-    private RecentSearching_CE_Data_Manager recent_searching_CE_Data_manager;
-
     public ChemicalEquationActivityPresenter(@NonNull ChemicalEquationActivity view) {
         super(view);
         offlineDatabaseManager = new OfflineDatabaseManager(view);
     }
 
     public void loadData () {
-        Bundle bundle = view.getIntent().getExtras();
-        RO_ChemicalEquation chemicalEquation = bundle.getParcelable(CHEMICAL_EQUATION);
-        if (onDataLoadedListener != null) {
-            onDataLoadedListener.onGettingChemicalEquation(chemicalEquation);
 
-            ArrayList <RO_ChemicalEquation> data = new ArrayList<>();
-
-            recent_searching_CE_Data_manager = new RecentSearching_CE_Data_Manager(offlineDatabaseManager);
-            recent_searching_CE_Data_manager.setOnGetDataSuccess(
-                    recent_Ces -> {
-                        data.addAll(recent_Ces);
-                        onDataLoadedListener.onDataLoadedFromDatabase(data);
-                    }
-            );
-
-        }
-
+        onDataLoadedListener.onGettingChemicalEquation(new ChemicalEquationDataGetter(view).getData());
+        // Decide load data in constructor to ensure that
+        new RecentSearching_CE_Data_Manager(offlineDatabaseManager)
+                .getData(recent_Ces ->
+                        onDataLoadedListener.onDataLoadedFromDatabase(recent_Ces));
     }
 
     public void setOnDataLoadedListener(OnDataLoadedListener onDataLoadedListener) {
@@ -60,5 +48,19 @@ public class ChemicalEquationActivityPresenter extends Presenter<ChemicalEquatio
         void onGettingChemicalEquation (RO_ChemicalEquation chemicalEquation);
 
         void onDataLoadedFromDatabase(ArrayList<RO_ChemicalEquation>chemicalEquations);
+    }
+}
+
+class ChemicalEquationDataGetter {
+    Activity view;
+
+    public ChemicalEquationDataGetter(Activity view) {
+        this.view = view;
+    }
+
+    public RO_ChemicalEquation getData () {
+        Bundle bundle = view.getIntent().getExtras();
+        RO_ChemicalEquation chemicalEquation = bundle.getParcelable(CHEMICAL_EQUATION);
+        return chemicalEquation;
     }
 }

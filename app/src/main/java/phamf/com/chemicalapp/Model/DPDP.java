@@ -6,9 +6,9 @@ public class DPDP {
 
     int id;
 
-    String name;
+    String name = "";
 
-    ArrayList<OrganicMolecule> organicMolecules;
+    ArrayList<OrganicMolecule> organicMolecules = new ArrayList<>();
 
     public DPDP(int id, String name, ArrayList<OrganicMolecule> organicMolecules) {
         this.id = id;

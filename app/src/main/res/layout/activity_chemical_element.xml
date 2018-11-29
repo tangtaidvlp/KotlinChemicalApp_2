@@ -347,7 +347,7 @@
     <Button
         android:id="@+id/btn_bottom_chemical_element_turn_On_search"
         android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_height="28dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/red_search_icon"

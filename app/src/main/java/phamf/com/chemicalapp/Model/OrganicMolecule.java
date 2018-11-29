@@ -10,13 +10,13 @@ public class OrganicMolecule {
 
     String normal_name;
 
-    String replace_name;
+    String replace_name = "";
 
-    int structure_image_id;
+    String structure_image_id;
 
-    int compact_structure_image_id;
+    String compact_structure_image_id;
 
-    ArrayList<Isomerism> isomerisms;
+    ArrayList<Isomerism> isomerisms = new ArrayList<>();
 
     public OrganicMolecule() {
 
@@ -46,19 +46,19 @@ public class OrganicMolecule {
         this.replace_name = replace_name;
     }
 
-    public int getStructure_image_id() {
+    public String getStructure_image_id() {
         return structure_image_id;
     }
 
-    public void setStructure_image_id(int structure_image_id) {
+    public void setStructure_image_id(String structure_image_id) {
         this.structure_image_id = structure_image_id;
     }
 
-    public int getCompact_structure_image_id() {
+    public String getCompact_structure_image_id() {
         return compact_structure_image_id;
     }
 
-    public void setCompact_structure_image_id(int compact_structure_image_id) {
+    public void setCompact_structure_image_id(String compact_structure_image_id) {
         this.compact_structure_image_id = compact_structure_image_id;
     }
 
@@ -70,7 +70,7 @@ public class OrganicMolecule {
         this.isomerisms = isomerisms;
     }
 
-    public OrganicMolecule(String molecule_formula, String normal_name, String replace_name, int structure_image_id, int compact_structure_image_id, ArrayList<Isomerism> isomerisms) {
+    public OrganicMolecule(String molecule_formula, String normal_name, String replace_name, String structure_image_id, String compact_structure_image_id, ArrayList<Isomerism> isomerisms) {
 
         this.molecule_formula = molecule_formula;
         this.normal_name = normal_name;

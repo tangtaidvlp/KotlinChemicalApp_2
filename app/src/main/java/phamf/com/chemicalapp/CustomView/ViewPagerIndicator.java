@@ -6,16 +6,10 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.support.annotation.Nullable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.util.Size;
 import android.view.View;
 
-import phamf.com.chemicalapp.Abstraction.SpecialDataType.IsomerismType;
 import phamf.com.chemicalapp.CustomView.CustomViewModel.Dot;
 
 import java.util.ArrayList;

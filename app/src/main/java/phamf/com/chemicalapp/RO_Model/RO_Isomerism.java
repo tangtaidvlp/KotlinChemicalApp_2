@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import phamf.com.chemicalapp.Abstraction.SpecialDataType.IsomerismType;
 
 public class RO_Isomerism extends RealmObject implements Parcelable {
 
@@ -17,9 +18,9 @@ public class RO_Isomerism extends RealmObject implements Parcelable {
 
     String replace_name;
 
-    int structure_image_id;
+    String structure_image_id;
 
-    int compact_structure_image_id;
+    String compact_structure_image_id;
 
 //    String type;
 
@@ -27,7 +28,7 @@ public class RO_Isomerism extends RealmObject implements Parcelable {
 
     }
 
-    public RO_Isomerism(String molecule_formula, String normal_name, String replace_name, int structure_image_id, int compact_structure_image_id) {
+    public RO_Isomerism(String molecule_formula, String normal_name, String replace_name, String structure_image_id, String compact_structure_image_id) {
         this.molecule_formula = molecule_formula;
         this.normal_name = normal_name;
         this.replace_name = replace_name;
@@ -41,8 +42,8 @@ public class RO_Isomerism extends RealmObject implements Parcelable {
         molecule_formula = in.readString();
         normal_name = in.readString();
         replace_name = in.readString();
-        structure_image_id = in.readInt();
-        compact_structure_image_id = in.readInt();
+        structure_image_id = in.readString();
+        compact_structure_image_id = in.readString();
     }
 
     public static final Creator<RO_Isomerism> CREATOR = new Creator<RO_Isomerism>() {
@@ -97,19 +98,19 @@ public class RO_Isomerism extends RealmObject implements Parcelable {
         this.replace_name = replace_name;
     }
 
-    public int getStructure_image_id() {
+    public String getStructure_image_id() {
         return structure_image_id;
     }
 
-    public void setStructure_image_id(int structure_image_id) {
+    public void setStructure_image_id(String structure_image_id) {
         this.structure_image_id = structure_image_id;
     }
 
-    public int getCompact_structure_image_id() {
+    public String getCompact_structure_image_id() {
         return compact_structure_image_id;
     }
 
-    public void setCompact_structure_image_id(int compact_structure_image_id) {
+    public void setCompact_structure_image_id(String compact_structure_image_id) {
         this.compact_structure_image_id = compact_structure_image_id;
     }
 
@@ -124,7 +125,7 @@ public class RO_Isomerism extends RealmObject implements Parcelable {
         dest.writeString(molecule_formula);
         dest.writeString(normal_name);
         dest.writeString(replace_name);
-        dest.writeInt(structure_image_id);
-        dest.writeInt(compact_structure_image_id);
+        dest.writeString(structure_image_id);
+        dest.writeString(compact_structure_image_id);
     }
 }

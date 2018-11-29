@@ -8,4 +8,8 @@
     <color name="BackgroundWeakBlue">#bec7f6</color>
     <color name="QuickSearchBG">#e78989</color>
     <color name="normal_dot_color">#54cd3f</color>
+    <color name="nonmetal_color">#FF65DA</color>
+    <color name="alkali_metal_color">#78FF88</color>
+    <color name="Group_B_metal">#FFF454</color>
+
 </resources>
