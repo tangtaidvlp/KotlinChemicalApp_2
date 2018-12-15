@@ -74,13 +74,13 @@
 
 
     <ListView
-        android:id="@+id/lv_dpdp_fast_scroll"
+        android:id="@+id/lv_dpdp_quick_change_organic"
         android:layout_width="244dp"
         android:layout_height="341dp"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="8dp"
+        android:layout_alignParentEnd="true"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:background="@color/QuickSearchBG"
         android:maxWidth="210dp"
         android:minWidth="150dp"
